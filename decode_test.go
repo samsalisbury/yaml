@@ -960,8 +960,8 @@ func (s *S) TestUnmarshalSliceOnPreset(c *C) {
 }
 
 type Thing struct {
+	StructField `yaml:",inline"`
 	StringField string
-	StructField
 }
 
 type StructField struct {
@@ -969,11 +969,12 @@ type StructField struct {
 }
 
 func (s *S) TestUnmarshalAnonymousFields(c *C) {
-	j := `{"StringField": "hello", "IntField": 5}`
+	j := `{"stringfield": "hello", "intfield": 5}`
 	var it Thing
 	if err := yaml.Unmarshal([]byte(j), &it); err != nil {
 		c.Fatal(err)
 	}
+	c.Assert(it.StringField, Equals, "hello")
 	c.Assert(it.IntField, Equals, 5)
 	c.Logf("Got: % +v", it)
 }
