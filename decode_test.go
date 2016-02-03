@@ -2,13 +2,14 @@ package yaml_test
 
 import (
 	"errors"
-	. "gopkg.in/check.v1"
-	"gopkg.in/yaml.v2"
 	"math"
 	"net"
 	"reflect"
 	"strings"
 	"time"
+
+	. "gopkg.in/check.v1"
+	"gopkg.in/yaml.v2"
 )
 
 var unmarshalIntTest = 123
@@ -956,6 +957,25 @@ func (s *S) TestUnmarshalSliceOnPreset(c *C) {
 	v := struct{ A []int }{[]int{1}}
 	yaml.Unmarshal([]byte("a: [2]"), &v)
 	c.Assert(v.A, DeepEquals, []int{2})
+}
+
+type Thing struct {
+	StringField string
+	StructField
+}
+
+type StructField struct {
+	IntField int
+}
+
+func (s *S) TestUnmarshalAnonymousFields(c *C) {
+	j := `{"StringField": "hello", "IntField": 5}`
+	var it Thing
+	if err := yaml.Unmarshal([]byte(j), &it); err != nil {
+		c.Fatal(err)
+	}
+	c.Assert(it.IntField, Equals, 5)
+	c.Logf("Got: % +v", it)
 }
 
 //var data []byte
